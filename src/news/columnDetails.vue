@@ -60,9 +60,9 @@
 				<h3>更多推荐</h3>
 				<ul class="recommend-news">
 					<li v-for="rec in recommend.slice(0,6)">
-						<img :src="rec.cover_pic" class="recommend-Pic" width="100%" alt="">
+						<img :src="rec.cover_pic" class="recommend-Pic pointer" width="100%" alt="" @click="$router.push({path:'/columnDetails',query:{id:rec.id}})">
 						<div class="recommend-text">
-							<h6>{{ rec.name }}</h6>
+							<h6 @click="$router.push({path:'/columnDetails',query:{id:rec.id}})" class="pointer">{{ rec.name }}</h6>
 							<p class="size12 text-gray m-t-xs">已更新 {{rec.count_infos_num}} 期</p>
 						</div>
 					</li>

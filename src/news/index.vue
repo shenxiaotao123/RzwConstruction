@@ -1,17 +1,8 @@
 <template>
   <div>
 	<myhead></myhead>
-	<!--轮播图-->
-	<div class="carousel wrap pos-rlt">
-		<template>
-			<el-carousel :interval="5000" arrow="always" height="400px">
-			  <el-carousel-item v-for="ads in adscolumn">
-				<h3><el-image :src="ads.pc_pic_url" ></el-image></h3>
-			  </el-carousel-item>
-			</el-carousel>
-		</template>
-	</div>	
-	
+
+
 	<!--热门专栏-->
 	<div class="m-t-md">
 	  <div class="wrap">
@@ -32,7 +23,7 @@
 					</div>
 				</div>
 				<div class="h-news-list">
-					<div class="n-l-wrap" v-for="inf of colr.infos.slice(0,6)">
+					<div class="n-l-wrap pointer" v-for="inf of colr.infos.slice(0,6)">
 						<img :src="inf.cover_img" class="news-Pic" width="100%" alt="" @click="$router.push({path:'/textDetails',query:{id:inf.id,cid:inf.column_id}})">
 						<div class="news-link" @click="$router.push({path:'/textDetails',query:{id:inf.id,cid:inf.column_id}})">
 						  	<h6>{{ inf.title }}</h6>
@@ -70,9 +61,6 @@ export default {
    this.$ajax.get('info/column').then((response) => { //专栏列表
        this.column = response.data.data.data
    });
-   this.$ajax.post('ads/column').then((response) => { //专栏轮播图
-       this.adscolumn = response.data.data.data
-   });
   },
   methods: {
     open() {
@@ -103,6 +91,12 @@ export default {
 				//alert(clomsg)
 				this.$message({
 				    message: clomsg,
+				    type: 'warning'
+				});
+			}
+			if(clocode==99){
+				this.$message({
+				    message: '您还未登录，请先登录再收藏',
 				    type: 'warning'
 				});
 			}
