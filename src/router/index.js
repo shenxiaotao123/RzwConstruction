@@ -1,114 +1,80 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import myhead from '@/components/myhead' //头部
-import myfooter from '@/components/myfooter' //尾部
-import videolist from '@/video/list' //百家讲坛
-import play from '@/video/play' //视频播放页
-import home from '@/main/home' //首页
-import news from '@/news/index' //专栏首页
-import columnDetails from '@/news/columnDetails' //专栏详情页
-import textDetails from '@/news/textDetails' //专栏文章详情页
-import downloadApp from '@/public/downloadApp' //弹出框APP引导
-import user from '@/user/user' //用户中心
-import pwd1 from '@/user/pwd1' //用户中心 - 修改密码
-import userIndex from '@/user/userIndex' //用户中心首页
-import shop from '@/shop/index' //建材城首页
-import shopList from '@/shop/list' //建材城列表
-import shopdetails from '@/shop/details' //建材城列表
-import shopIndex from '@/shop/shopIndex' //店铺主页
 import login from '@/login/login' //登录页
-import reg from '@/login/reg' //注册页
+import userinfo from '@/userinfo/info' //用户-个人信息
+import example from '@/userinfo/example' //用户-实例列表
+import addExample from '@/userinfo/addExample' //用户-新增实例
+import imgList from '@/userinfo/imgList' //用户-实例列表 - 图片列表
+import order from '@/order/list' //订单-订单列表
+import construction from '@/order/modules/construction' //订单-订单列表
 
+import order_details from '@/order/order_details' //订单-订单详情页
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/', //首页
-      name: 'home',
-      component: home,
-    },
-    {
-      path: '/myhead', //头部
-      name: 'myhead',
-      component: myhead
-    },
-    {
-      path: '/myfooter', //尾部
-      name: 'myfooter',
-      component: myfooter
-    },
-	{
-	  path: '/videolist', //百家讲坛
-	  name: 'videolist',
-	  component: videolist
-	},
-	{
-	  path: '/play', //视频播放页
-	  name: 'play',
-	  component: play
-	},
-    {
-      path: '/downloadApp', //弹出框APP引导
-      name: 'downloadApp',
-      component: downloadApp
-    },
-    {
-      path: '/user', //用户中心
-      name: 'user',
-      component: user
-    },
-    {
-      path: '/pwd1', //用户中心 -修改密码1
-      name: 'pwd1',
-      component: pwd1
-    },
-    {
-      path: '/userIndex', //用户中心首页
-      name: 'userIndex',
-      component: userIndex
-    },
-	{
-	  path: '/news', //专栏首页
-	  name: 'news',
-	  component: news
-	},
-	{
-	  path: '/columnDetails', //专栏详情页
-	  name: 'columnDetails',
-	  component: columnDetails
-	},
-	{
-	  path: '/textDetails', //专栏文章详情页
-	  name: 'textDetails',
-	  component: textDetails
-	},
-    {
-      path: '/shop', //建材城首页
-      name: 'shop',
-      component: shop
-    },
-    {
-      path: '/shopList', //建材城列表
-      name: 'shopList',
-      component: shopList
-    },
-    {
-      path: '/shopdetails', //建材城详情页
-      name: 'shopdetails',
-      component: shopdetails
-    },
-    {
       path: '/login', //登录页
       name: 'login',
       component: login
     },
     {
-      path: '/reg', //登录页
-      name: 'reg',
-      component: reg
+      path: '/', //框架页
+      name: 'index',
+      component: () => import('@/index/index'),
+    },
+    // 个人信息
+    {
+      path: '/userinfo/info',
+      name: 'Personal-info',
+      component: () => import('@/userinfo/info')
+    },
+    // 实例列表
+    {
+      path: '/userinfo/example',
+      name: 'example',
+      component: () => import('@/userinfo/example')
+    },
+    // 实例列表 - 新增
+    {
+      path: '/userinfo/addExample',
+      name: 'addExample',
+      component: () => import('@/userinfo/addExample')
+    },
+    // 图片列表
+    {
+      path: '/userinfo/imgList',
+      name: 'imgList',
+      component: () => import('@/userinfo/imgList')
+    },
+    // 订单列表
+    {
+      path: '/order/list',
+      name: 'orderList',
+      component: () => import('@/order/list'),
+    },
+    // 上传施工图
+    {
+      path: '/order/modules/construction',
+      name: 'construction',
+      component: () => import('@/order/modules/construction')
+    },
+    //订单详情页
+    {
+      path: '/order/order_details',
+      name: 'order_details',
+      component: () => import('@/order/order_details'),
+      children: [
+        // 订单详情页
+        {
+          path: '/order/modules/designFee',
+          name: 'designFee',
+          component: () => import('@/order/modules/designFee')
+        }
+      ]
     }
+
 
   ]
 })

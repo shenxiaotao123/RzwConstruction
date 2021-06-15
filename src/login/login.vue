@@ -1,141 +1,212 @@
 <template>
-  <div>
-      <myhead></myhead>
-       <div class="login pos-rlt">
-          <div class="loginForm">
-            <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="短信验证码登录" name="second">
-                  <form @submit="onSubmit">
-                       <el-input v-model="sms.username" class="m-b-sm" type="tel" left-icon="phone-o" placeholder="手机号码" maxlength="11"></el-input>
-                       <div class="pos-rlt">
-                         <el-input v-model="sms.tel_code" class="m-b-sm" center clearable left-icon="qr" maxlength="6" type="text" placeholder="短信验证码"></el-input>
-                         <el-button type="text" class="Code" v-show="!sendCode">{{authTime}}秒</el-button>
-                         <el-button type="text" class="Code pointer" v-show="sendCode" @click="ObtainCode()">获取验证码</el-button>
-                       </div>
+          <a-form-item class="user-layout-login" id="formLogin" ref="formLogin" form="form" @submit="onSubmit">
+              <div class="loginWrap">
+                <h2>荣装网设计师端</h2>
+                <div class="loginWrapCon">
+                  <h4>欢迎登录</h4>
 
-                       <div class="m-t-md">
-                         <el-button type="danger" class="w-full" native-type="submit">登录</el-button>
-                       </div>
-                  </form>
-                </el-tab-pane>
+               <a-input size="large" v-model="sms.phone" class="m-b-sm" type="tel"  placeholder="手机号码" maxlength="11"  v-decorator="['mobile', {rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '手机号' }], validateTrigger: 'change'}]">
+                 <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+               </a-input>
+               <a-row :gutter="16" class="m-t-lg">
+                 <a-col class="gutter-row" :span="16">
+                   <a-form-item>
+                     <a-input size="large" v-model="sms.tel_code" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码！' }], validateTrigger: 'blur'}]">
+                       <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                     </a-input>
+                   </a-form-item>
+                 </a-col>
+               <a-col class="gutter-row" :span="8">
+                 <a-button class="getCaptcha" tabindex="-1" :disabled="state.smsSendBtn" @click.stop.prevent="getCaptcha"
+                   v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
+               </a-col>
+               </a-row>
 
-            </el-tabs>
-            <div class="size12 m-t-md text-gray">
-              <span class="fl pointer" @click="open">忘记登录密码？</span>
-              <span class="fr pointer" @click="$router.push({path:'/reg'})">还没有账号？立即注册</span>
-            </div>
-          </div>
-       </div>
-      <myfooter></myfooter>
-  </div>
+               <div class="m-t-md">
+                 <a-button size="large" type="primary" htmlType="submit" class="w-full" @click="onSubmit">登录</a-button>
+               </div>
+               </div>
+             </div>
+          </a-form-item>
+
 </template>
 
 <script>
-  import myhead from '@/components/myhead'
-  import myfooter from '@/components/myfooter'
-  import comment from '@/public/Comment'
-  import downloadApp from '@/public/downloadApp' //弹出框APP引导
-
   export default {
       name: "login",
       data() {
         return {
           sms:{
-            username:'',
+            phone:'',
             tel_code:'',
             type:'sms'
           },
-           sendCode: true, // 控制发送验证码按钮显示
-           authTime: 0, // 倒计时
-           activeName: 'second', //Tab
+          form: this.$form.createForm(this),
+          state: {
+            time: 60,
+            loginBtn: false,
+            // login type: 0 email, 1 username, 2 telephone
+            loginType: 0,
+            smsSendBtn: false
+          },
+           showRentPrise:false
         }
       },
       components: {
-        myhead,
-        myfooter,
-        comment,
-        downloadApp
+      },
+      mounted () {
+        document.cookies
+        var token = this.$cookies.get("token")
+        console.log(token +"已登录");
+        this.tokenData = token
+        if(token !== 'null'){
+           //this.$router.push({path:'/'})
+        }
       },
       methods: {
-        //短信登录
+
         onSubmit() {
-              var params= {
-                'username' : this.sms.username,
-                'tel_code' : this.sms.tel_code,
-                'type': 'sms',
-                'port': 'pc',
-              };
-              var formData = params; // 这里才是你的表单数据
-              this.$ajax.post('consumer/login', formData).then((response) => {
-                  this.$cookies.isKey('token')
-                  this.$cookies.set('token', response.data.data.token,60*60*24*30)
-                  this.$cookies.set('ykj_name', response.data.data.ykj_name,60*60*24*30)
-                  this.$cookies.set('user_image', response.data.data.user_image,60*60*24*30)
-                  //console.log(response.data.data.token)
-                  //document.cookie
-                  // var realname = this.$cookies.get("ykj_name")
-                  // this.realnameData = realname
-				  var codedata = response.data.code
-				  if(codedata == 0){
-					this.$router.push({path:'/userIndex'})
-				  }
-				  if(codedata == 1){
-					this.$message.error(response.data.msg);
-				  }
-                  
-              }, (response) => {
-                // error callback
-                console.log(error);
-              });
-            },
-        // 获取验证码
-        ObtainCode () {
-              var Cparams= {
-                'phone' : this.sms.username,
-                'type' : 'oAuth',
-              };
-              var Captcha = Cparams; // 这里才是你的表单数据
-              this.$ajax.post('consumer/getTelCode', Captcha).then((response) => {
-                var codedata = response.data.code
-                if(codedata == 0){
-                	this.sendCode = false  // 控制显示隐藏
-                	this.authTime = 60
-                	let timeInt = setInterval(() => {
-                	  this.authTime--
-                	  if (this.authTime <= 0) {
-                	    this.sendCode = true
-                	    window.clearInterval(timeInt)
-                	  }
-                	}, 1000)
-                }
-                if(codedata == 1){
-                	this.$message.error(response.data.msg);
-                }
-              }, (response) => {
-                // error callback
-                console.log(error);
-              });
-      },
-        handleClick(tab, event) {
-          console.log(tab, event);
+                var formData= { // 这里才是你的表单数据
+                  'phone' : this.sms.phone,
+                  'tel_code' : this.sms.tel_code,
+                  'type': 'sms',
+                  'port': 'pc',
+                };
+                this.$ajax({
+                  url:'designer/login',
+                  method: 'post',
+                  params:formData
+                })
+                .then((res)=>{
+                    var codedata = res.data.code;
+                    //var nick_name = res.data.nick_name
+                    if(codedata == 0){
+                        // 延迟 1 秒显示欢迎信息
+                        setTimeout(() => {
+                          this.$notification.success({
+                            message: '登录成功！欢迎',
+                            description: `欢迎回来`
+                          })
+                        }, 1000)
+                      console.log(res.data);
+                      console.log(res.data.data.token + '我token');
+                      this.$cookies.isKey('token')
+                      this.$cookies.set('token', res.data.data.token,60*60*24*30)
+                      this.$cookies.set('nick_name', res.data.data.nick_name,60*60*24*30)
+                      this.$cookies.set('user_image', res.data.data.user_image,60*60*24*30)
+                      // document.cookie
+                      // var realname = this.$cookies.get("real_name")
+                      // this.realnameData = realname
+                      this.$router.push({path:'/'})
+                      console.log("登录成功");
+                    }
+                    if(codedata == 1){
+                      console.log("错了");
+                      this.$message.error(res.data.msg);
+                    }
+                });
         },
-        //点击APP引导弹出框
-        open() {
-          this.$alert(<downloadApp/>,{
-            dangerouslyUseHTMLString: true,
-              showConfirmButton:false,
-          });
-        }
+
+        getCaptcha (e) {  // 获取验证码
+                e.preventDefault()
+                const { form: { validateFields }, state } = this
+                validateFields(['mobile'], { force: true }, (err, values) => {
+                  if (!err) {
+                    state.smsSendBtn = true
+                    const interval = window.setInterval(() => {
+                      if (state.time-- <= 0) {
+                        state.time = 60
+                        state.smsSendBtn = false
+                        window.clearInterval(interval)
+                      }
+                    }, 1000)
+                    var getTelCodeData= { // 这里才是你的表单数据
+                      'phone' : this.sms.phone,
+                      'type': 'login'
+                    };
+                    //const hide = this.$message.loading('验证码发送中..', 0)
+                    console.log("接口前");
+                    this.$ajax({  //获取短信验证码接口
+                      url:'designer/getTelCode',
+                      method: 'post',
+                      params:getTelCodeData
+                    }).then((res)=>{
+                      console.log("接口中");
+                        console.log(res.data.code);
+                        var codedata = res.data.code
+                        if(codedata == 0){
+                          console.log("验证码成功了");
+                          this.$message.success(res.data.msg);
+                        }
+                        if(codedata == 1){
+                          console.log(res.data.msg);
+                          this.$message.error(res.data.msg);
+                        }
+
+                    })
+                    .catch(err => {
+                      // setTimeout(hide, 1)
+                      // clearInterval(interval)
+                      // state.time = 60
+                      // state.smsSendBtn = false
+                      // this.requestFailed(err)
+                    })
+                  }
+                })
+              },
       }
+
   }
 </script>
 
-<style lang="less">
-  .login { height: 500px; background: url("~@/assets/img/login/bg.jpg") no-repeat center;
-    .loginForm { position: absolute; left:50%; top: 50px; margin-left: 240px; padding: 20px 30px 30px 30px; width: 300px; background-color: #fff; border-radius:5px; box-shadow: #eee 10px 10px 0;
-      .Code { position: absolute !important; right: 25px; top:0;}
-      .el-tabs__item { height: 50px; line-height: 50px; font-size: 16px; font-weight: 700;}
-      .el-tabs__nav-wrap::after { height: 0;}
+<style lang="less" scoped>
+  .user-layout-login {
+    position: absolute; left: 0; top: 0;
+    width: 100%; height: 100%; background:#F7F7F7 url(../assets/img/login/bg.png);
+    label {
+      font-size: 14px;
+    }
+    .getCaptcha {
+      display: block;
+      width: 100%;
+      height: 40px;
+    }
+    .forge-password {
+      font-size: 14px;
+    }
+    button.login-button {
+      padding: 0 15px;
+      font-size: 16px;
+      height: 40px;
+      width: 100%;
+    }
+    .user-login-other {
+      text-align: left;
+      margin-top: 24px;
+      line-height: 22px;
+
+      .item-icon {
+        font-size: 24px;
+        color: rgba(0, 0, 0, 0.2);
+        margin-left: 16px;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .register {
+        float: right;
+      }
     }
   }
+.loginWrap { position: relative; margin: 150px auto 0 auto; padding-left: 345px; width: 800px; background:#FF6260 url(../assets/img/login/img.png) no-repeat left bottom; background-size: 345px ;
+  h2 { position: absolute; left: 0; top: 50px; width: 345px; text-align: center; color:#fff; font-size: 28px;}
+  .loginWrapCon { padding: 80px 60px 100px 60px; background-color: #fff;}
+   h4 { margin-bottom: 30px; font-size: 28px;}
+}
+
 </style>

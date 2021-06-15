@@ -262,7 +262,7 @@ html,body { font-family: SourceHanSansCN-Normal;}
 .bg-ff { background-color: #fff;}
 .bg-f7 { background-color: #f7f7f7;}
 
-.text-white { color: #fff;}
+.text-white { color: #fff !important;}
 .text-gray { color: #999;}
 .text-lightgray { color: #666;}
 .text-darkgray { color: #333;}
