@@ -98,6 +98,7 @@
                       // var realname = this.$cookies.get("real_name")
                       // this.realnameData = realname
                       this.$router.push({path:'/'})
+                      location.reload(); //刷新页面
                       console.log("登录成功");
                     }
                     if(codedata == 1){

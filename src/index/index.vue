@@ -25,13 +25,13 @@
             </template>
           </a-statistic>
         </div>
-        <div class="stat-item">
-          <a-statistic title="粉丝数" :value="userinfo.user_fans_num" />
+        <div class="stat-item" @click="fansListChange(true)">
+          <a-statistic title="粉丝数" :value="userinfo.user_fans_num" class="pointer" />
         </div>
       </div>
     </div>
 
-      <a-row :gutter="24">
+    <a-row :gutter="24">
         <a-col :span="8" :xl="8" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card title="订单(统计已付定金)" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
             <div class="wrapper-sm padder-tb-lg">
@@ -99,7 +99,6 @@
               </div>
             </a-card>
         </a-col>
-
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card  title="动态" :bordered="false">
             <a-list>
@@ -118,7 +117,6 @@
             </a-list>
           </a-card>
         </a-col>
-
         <a-col style="padding: 0 12px" :xl="8" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card title="待处理订单" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
             <div class="wrapper-sm padder-tb-lg">
@@ -152,23 +150,27 @@
             </div>
           </a-card>
         </a-col>
+    </a-row>
 
-      </a-row>
+    <!-- 粉丝列表 -->
+    <a-modal title="粉丝列表" :width="840" :visible="fansListVisible" @cancel="() => fansListChange(false)" :footer="null">
+      <fansList />
+    </a-modal>
+
 </div>
-
 </template>
 
 <script>
-
-
+ import fansList from './fansList' //新增图片
 export default {
   name: 'index',
   components: {
-
+    fansList
   },
   data () {
     return {
       loading: true,
+      fansListVisible: false,//对话框是否可见
       index:[],
       userinfo:[],
       userinfoinfos:[],
@@ -220,6 +222,9 @@ export default {
 
   },
   methods: {
+    fansListChange (fansListVisible) {
+       this.fansListVisible = fansListVisible;
+    },
     NotLogin(){
       document.cookies
       var token = this.$cookies.get("token")

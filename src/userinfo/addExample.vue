@@ -10,8 +10,8 @@
     </div>
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
       <a-form-model :model="addwork" :rules="rulesExample" ref="ruleExampleForm">
-        <a-form-model-item label="标题" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="title">
-          <a-input v-model="addwork.title" placeholder="请输入标题"  />
+        <a-form-model-item label="标题"  has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="title">
+          <a-input v-model="addwork.title" placeholder="请输入标题" />
         </a-form-model-item>
         <a-form-model-item label="设计风格" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="styleName">
           <a-select :key="styleName" :default-value="styleName" v-model="addwork.styleName" style="width:120px" @change="style">
@@ -27,12 +27,11 @@
             </a-select-option>
          </a-select>
         </a-form-model-item>
-        <a-form-model-item label="设计理念" :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="brief">
+        <a-form-model-item label="设计理念" has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="brief">
           <a-input v-model="addwork.brief" placeholder="" />
         </a-form-model-item>
-        <a-form-model-item label="封面图" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="thumb">
-          <div class="clearfix">
-              <a-upload action="http://apitesttest.rongzw.com/api/upload/image" list-type="picture-card" :fileList="fileList" @preview="handlePreview" @change="handleChange" accept=".jpg,.jpge,.png,.gif">
+        <a-form-model-item label="封面图" has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="thumb">
+              <a-upload action="http://apitesttest.rongzw.com/api/upload/image" list-type="picture-card" :fileList="fileList" @preview="handlePreview" @change="handleChange" accept=".jpg,.jpge,.png,.gif" v-model="addwork.thumb">
                 <div v-if="fileList.length < 1">
                   <a-icon type="plus" />
                   <div class="ant-upload-text">
@@ -43,7 +42,7 @@
               <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
                 <img alt="example" style="width: 100%" :src="previewImage" />
               </a-modal>
-          </div>
+
 
         </a-form-model-item>
         <a-form-item label="视频" :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
@@ -54,8 +53,7 @@
              确认上传
           </a-button>
           <a-alert message="文件已上传成功!" type="success" show-icon v-show="uploadSuccess" />
-            <p v-show="addwork.video">已上传： {{addwork.video}}（重新上传可覆盖）</p>
-
+          <p v-show="addwork.video">已上传： {{addwork.video}}（重新上传可覆盖）</p>
         </a-form-item>
         <a-form-item label="vr地址" :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
           <a-input v-model="addwork.vr_url" placeholder="" />
@@ -148,11 +146,17 @@ export default {
        callback()
     };
     //自定义 上传 验证
-    const uploadValidator = (rule, value, callback, fileList) => {
-       if (this.fileList.length === 0) {     
-          callback('封面图不能为空!')
+    const uploadValidator = (rule, value, callback) => {
+      console.log(this.fileList.length ,"验证")
+       // if (this.fileList.length === 0) {
+       if (this.fileList.length === '0') {
+          callback(new Error('封面图不能为空!'))
+          console.log("我是等于0")
+       }else{
+         console.log("我是不等于0")
+         callback();
        }
-       callback()
+      callback();
     };
 
     return {
@@ -222,6 +226,7 @@ export default {
              { min: 1, max: 200, message: '字数应该是 1 到 200个字之间', trigger: 'blur' },
            ],
            thumb: [  //封面图
+             { required: true, message: '封面图不能为空', trigger: 'blur' },
              { validator: uploadValidator, trigger: 'change' },
            ],
            area: [  //面积
@@ -386,7 +391,7 @@ export default {
     },
     //立即保存 - 提交动作
     onSubmit() {
-       console.log('提交动作!!');
+      console.log('提交动作!!');
       this.$refs.ruleExampleForm.validate(valid => {
          if (valid) {
             console.log('验证通过!!');
@@ -514,7 +519,8 @@ export default {
     handleChange({ fileList }) {
       // console.log("11111111111111111")
       this.fileList = fileList;
-      console.log(fileList)
+      console.log(this.fileList.length)
+      this.addwork.thumb = this.fileList.length
       this.$ajax({
         url:'/api/upload/image', //图片上传接口
         method: 'post',
@@ -524,7 +530,7 @@ export default {
       })
       .then((res)=>{
         this.uploadImage = res.data.data.url
-        console.log(this.uploadImage.url)
+        console.log(this.uploadImage)
       });
     },
     //上传VR封面图
@@ -616,8 +622,6 @@ export default {
         }
         return pwd;
     },
-
-
     upload(){
                 var _self = this;
                 var formData = new FormData();
