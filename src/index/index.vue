@@ -153,7 +153,7 @@
     </a-row>
 
     <!-- 粉丝列表 -->
-    <a-modal title="粉丝列表" :width="840" :visible="fansListVisible" @cancel="() => fansListChange(false)" :footer="null">
+    <a-modal title="粉丝列表" :width="840" :visible="fansListVisible"  @cancel="() => fansListChange(false)" :footer="null" :forceRender="true">
       <fansList />
     </a-modal>
 

@@ -1,5 +1,5 @@
 <template>
-      <a-table size="default" rowKey="id" :columns="columns" :data-source="fansList" :pagination="pagination" :loading="loading" showPagination="auto">
+      <a-table size="default" rowKey="id" :columns="columns" :data-source="fansList" :pagination="pagination" :loading="loading" showPagination="auto" @change="handleTableChange">
         <div style="height: 30px; overflow: hidden; background-color: #e7e7e7; text-align: center; line-height: 30px;" slot="imgurl" slot-scope="text, record">
           <img style="heigth:30px; width:30px;" :src="record.user.user_image" />
         </div>
@@ -29,7 +29,6 @@ export default {
   name: 'fansList',
   data () {
     return {
-      confirmLoading: false,
       fansList: [],
       pagination: {
         pageSize: 5,
@@ -37,21 +36,18 @@ export default {
       },
       loading: false,
       columns,
-
-      selectedRowKeys: [],
-      selectedRows: []
     }
   },
 
   mounted() {
-    this.fetch();//图片列表请求接口部分
+    this.fetch();//粉丝列表请求接口部分
   },
   methods: {
     handleTableChange(pagination, filters, sorter) {
+          console.log(pagination, "分页");
           const pager = { ...this.pagination };
           pager.current = pagination.current;
           this.pagination = pager;
-          // console.log(this.pagination)
           this.fetch({
             results: pagination.pageSize,
             page: pagination.current,
@@ -61,10 +57,11 @@ export default {
           });
     },
     fetch(params = {}) {
-      this.getWorkImage(); //图片列表请求接口部分
+      console.log("粉丝列表请求接口")
+      this.getFans(); //粉丝列表请求接口部分
     },
-    //图片列表请求接口部分
-    getWorkImage(){
+    //粉丝列表请求接口部分
+    getFans(){
       document.cookies
       var token = this.$cookies.get("token")
       this.loading = true;
@@ -85,7 +82,7 @@ export default {
         pagination.total =  data.data.data.count;
         this.loading = false;
         this.fansList = data.data.data.data;
-        //console.log(pagination)
+        console.log(pagination)
         this.pagination = pagination;
       });
     },

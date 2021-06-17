@@ -20,9 +20,15 @@ export default new Router({
       component: login
     },
     {
-      path: '/', //框架页
+      path: '/', //框架页 - 首页
       name: 'index',
       component: () => import('@/index/index'),
+    },
+    // 个人信息
+    {
+      path: '/userinfo/info',
+      name: 'Personal-info',
+      component: () => import('@/userinfo/info')
     },
     // 个人信息
     {
