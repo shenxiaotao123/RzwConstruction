@@ -21,7 +21,7 @@
           <a-statistic title="当前余额" :value="userinfo.balance">
             <template #suffix>
               <span class="size14">元</span>
-              <a>（提现）</a>
+              <a @click="withdraw">（提现）</a>
             </template>
           </a-statistic>
         </div>
@@ -222,15 +222,18 @@ export default {
 
   },
   methods: {
-    fansListChange (fansListVisible) {
+    fansListChange (fansListVisible) { //粉丝
        this.fansListVisible = fansListVisible;
     },
-    NotLogin(){
+    NotLogin(){ //退出
       document.cookies
       var token = this.$cookies.get("token")
       if(token == null){
         this.$router.push({ path: '/login' })
       }
+    },
+    withdraw(){ //提现
+      this.$message.warning('没有可供提现余额');
     },
   }
 }
