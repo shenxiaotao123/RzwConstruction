@@ -71,52 +71,45 @@
       </div>
 
       <a-table ref="table" size="default" rowKey="id" :data-source="orderList" :columns="columns" :pagination="pagination" :loading="loading" @change="orderTableChange" :rowSelection="rowSelection" showPagination="auto">
+        <span slot="orderType" slot-scope="text, record">
+          <span v-if="record.is_merge == 0">设计</span>
+          <span v-if="record.is_merge == 1">设计&amp;施工</span>
+        </span>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="$router.push({path:'order_details',query:{id:record.id}})">订单详情</a>
-            <span v-if="record.order_stage_id === 1">
-              <a-divider type="vertical" />
-              <a @click="setModal1Visible(true,record.id)">确认设计费</a>
-            </span>
             <span v-if="record.order_stage_id === 3">
               <a-divider type="vertical" />
-              <a @click="showDoor(record.id)">确认上门</a>
+              <a @click="setModal2Visible(true,record.id)">上传劳务合同</a>
             </span>
             <span v-if="record.order_stage_id === 4">
               <a-divider type="vertical" />
-              <a @click="setModal2Visible(true,record.id)">上传平面图</a>
+              <a @click="hydropower(record.id)">确认水电完成</a>
             </span>
             <span v-if="record.order_stage_id === 6">
               <a-divider type="vertical" />
-              <a @click="$router.push({path:'modules/construction',query:{id:record.id}})">上传施工图</a>
+              <a @click="woodworking(record.id)">确认泥工木工完成</a>
+            </span>
+            <span v-if="record.order_stage_id === 8">
+              <a-divider type="vertical" />
+              <a @click="paint(record.id)">确认油漆完成</a>
             </span>
           </template>
         </span>
       </a-table>
 
-      <!-- 确认房屋面积及设计费 -->
-      <a-modal title="确认房屋面积及设计费" :width="840" :visible="modal1Visible" @cancel="() => setModal1Visible(false)" :footer="null">
-        <designFee :oid="recordID" :tokenData="tokenData" :confirmOrderhouse="confirmOrderhouse" :confirmOrder="confirmOrder" v-on:childClose="getChildClose"/>
-      </a-modal>
-      <!-- 上传平面图 -->
-      <a-modal title="上传平面图" :width="500" :visible="modal2Visible" @ok="postUploadImageUrl" @cancel="() => setModal2Visible(false)">
-        <floorplan v-on:uploadImageUrl="getUploadImageUrl" />
-      </a-modal>
       <!-- 上传施工图 -->
-     <!-- <a-modal title="上传施工图包" :width="1000" v-model="modal3Visible"  @ok="() => (modal3Visible = false)">
-        <construction :oid="recordID" :tokenData="tokenData" />
-      </a-modal> -->
-     <!-- <step-by-step-modal ref="modal" @ok="handleOk"/> -->
+      <a-modal title="上传劳务合同" :width="840" :visible="modal2Visible" @ok="postUploadImageUrl" @cancel="() => setModal2Visible(false)">
+        <construction v-on:uploadImageUrl="getUploadImageUrl" />
+      </a-modal>
+
     </a-card>
 
   </div>
 </template>
 
 <script>
-import designFee from './modules/designFee' //确认房屋面积及设计费
-import floorplan from './modules/floorplan' //上传平面图
 import construction from './modules/construction' //上传施工图
-
 const columns = [
   {
     title: '订单ID',
@@ -158,21 +151,20 @@ const columns = [
   },
   {
     title: '订单类型',
-    dataIndex: 'name'
+    dataIndex: 'orderType',
+    scopedSlots: { customRender: 'orderType' }
+
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '190px',
+    width: '230px',
     scopedSlots: { customRender: 'action' }
   }
 ]
-
 export default {
   name: 'orderTableList',
   components: {
-    designFee,
-    floorplan,
     construction
   },
   data () {
@@ -209,7 +201,6 @@ export default {
       selectedRows: []
     }
   },
-
   computed: {
     rowSelection () {
       return {
@@ -242,7 +233,7 @@ export default {
      document.cookies
      var token = this.$cookies.get("token")
      this.loading = true;
-     this.$ajax({url:'/designer/orderList',
+     this.$ajax({url:'/sg/orderList',
        method: 'get',
        params:{
           user_token:token,
@@ -269,71 +260,26 @@ export default {
      this.orderStageType = id;
      this.getOrderList(this.orderStageType);
    },
-   getDesignFee(){ //获取 确认房屋面积及设计费 的接口数据
-     document.cookies
-     var token = this.$cookies.get("token")
-     this.tokenData = token; //用来传值给子组件
-     this.$ajax({url:'/designer/order/confirmOrder', //确认房屋信息及订单金额
-      method: 'get',
-
-       params:{
-         user_token:token,
-         order_id: this.recordID,
-       }
-     })
-     .then((res)=>{
-       this.confirmOrderhouse = res.data.data.house
-       this.confirmOrder = res.data.data
-     });
-   },
-   getChildClose(data){ //确认房屋面积及设计费 子组件向父组件传值
-      this.childClose = data;
-      if(this.childClose == 0){
-         //this.orderTableChange();
-         this.setModal1Visible(); //收到关闭信号,执行关闭
-         // 重置表单数据
-         //form.resetFields()
-         // 刷新表格
-         //this.$refs.table.refresh()
-         this.getOrderList(); //订单列表请求接口部分
-         //location.reload(); //刷新页面
-      }
-    },
-   setModal1Visible(modal1Visible,record) { //确认设计费 - 弹出框、子组件传参
-        this.modal1Visible = modal1Visible;
-        this.recordID = record; //订单ID
-        this.tokenData;
-        if(modal1Visible == true){
-          this.getDesignFee();
-        }
-    },
-   setModal2Visible(modal2Visible,record) { //上传平面图 - 弹出框
+   setModal2Visible(modal2Visible,record) { //上传劳务合同 - 弹出框
          this.modal2Visible = modal2Visible;
          this.recordID = record; //订单ID
          // this.tokenData;
    },
-   // setModal3Visible(modal3Visible,record) { //上传施工图 - 弹出框
-   //       this.modal3Visible = modal3Visible;
-   //       this.recordID = record; //订单ID
-   //       document.cookies
-   //       var token = this.$cookies.get("token")
-   //       this.tokenData = token;
-   // },
-   getUploadImageUrl(data){ //上传平面图 图片地址 子组件向父组件传值
+   getUploadImageUrl(data){ //上传劳务合同 文件地址 子组件向父组件传值
       this.uploadImageUrl = data;
    },
-   postUploadImageUrl(data){ //上传平面图 “确定” 回调事件
+   postUploadImageUrl(data){ //上传劳务合同 “确定” 回调事件
      this.modal2Visible = false;
      document.cookies
      var token = this.$cookies.get("token")
-     this.$ajax({url:'/designer/order/uploadFloorPlan', //提交订单设计平面图
+     this.$ajax({url:'/sg/order/uploadContract', //提交上传劳务合同
       method: 'post',
       params:{
          user_token: token,
          order_id: this.recordID,
        },
        data:{
-         plan_image:this.uploadImageUrl,
+         sg_contract_zip:this.uploadImageUrl,
        }
      })
      .then((res)=>{
@@ -347,12 +293,12 @@ export default {
      });
 
    },
-   showDoor(record){ //确认上门
+   hydropower(record){ //确认水电施工
      let self = this;
      this.$confirm({
              title: '提示',
-             content: '请您确认已上门服务？',
-             okText: '确认已上门',
+             content: '请您确认水电施工已经完成？',
+             okText: '确认已完成',
              okType: 'danger',
              cancelText: '取消',
              onOk() {
@@ -361,7 +307,77 @@ export default {
                document.cookies
                var token = self.$cookies.get("token")
                console.log(token)
-               self.$ajax({url:'/designer/order/dropIn', //设计师确认上门
+               self.$ajax({url:'/sg/order/sgConfirmShuiDian',
+                 method: 'post',
+                   params:{
+                   user_token: token,
+                   order_id: self.recordID,
+                 }
+               })
+               .then((res)=>{
+                 self.dropIn = res.data.msg
+                 if(res.data.code == 1){
+                   self.$message.error(res.data.msg);
+                 }
+                 if(res.data.code == 0){
+                   self.$message.success(res.data.msg);
+                 }
+                 self.getOrderList(); //订单列表请求接口部分
+               });
+             },
+             onCancel() {},
+           });
+   },
+   woodworking(record){ //确认泥工木工施工完成
+     let self = this;
+     this.$confirm({
+             title: '提示',
+             content: '请您确认泥工木工施工完成？',
+             okText: '确认已完成',
+             okType: 'danger',
+             cancelText: '取消',
+             onOk() {
+               console.log(self)
+               self.recordID = record;
+               document.cookies
+               var token = self.$cookies.get("token")
+               console.log(token)
+               self.$ajax({url:'/sg/order/sgConfirmNiMu',
+                 method: 'post',
+                   params:{
+                   user_token: token,
+                   order_id: self.recordID,
+                 }
+               })
+               .then((res)=>{
+                 self.dropIn = res.data.msg
+                 if(res.data.code == 1){
+                   self.$message.error(res.data.msg);
+                 }
+                 if(res.data.code == 0){
+                   self.$message.success(res.data.msg);
+                 }
+                 self.getOrderList(); //订单列表请求接口部分
+               });
+             },
+             onCancel() {},
+           });
+   },
+   paint(record){ //确认油漆施工完成
+     let self = this;
+     this.$confirm({
+             title: '提示',
+             content: '请您确认油漆施工完成？',
+             okText: '确认已完成',
+             okType: 'danger',
+             cancelText: '取消',
+             onOk() {
+               console.log(self)
+               self.recordID = record;
+               document.cookies
+               var token = self.$cookies.get("token")
+               console.log(token)
+               self.$ajax({url:'/sg/order/sgConfirmYouQi',
                  method: 'post',
                    params:{
                    user_token: token,

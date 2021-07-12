@@ -6,12 +6,12 @@ import VueCookies from 'vue-cookies'
 import Antd from 'ant-design-vue'// 引入Ant Design Vue组件
 import 'ant-design-vue/dist/antd.css' // 引入Ant Design Vue样式
 
+
 // 引入表单验证
 import verify from "vue-verify-plugin";
 Vue.use(verify, {
   blur: true // 失焦是否触发
 })
-
 
 Vue.config.productionTip = false;
 Vue.use(Antd) //挂载到vue中

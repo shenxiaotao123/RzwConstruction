@@ -5,7 +5,7 @@
       <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
         <div class="logo">
           <img src="~@/assets/img/AppIcon.png" class="logoimg" alt="">
-          <span class="logoText">设计师管理平台</span>
+          <span class="logoText">劳务公司管理端</span>
         </div>
         <a-menu theme="dark" mode="inline" :default-selected-keys="['1']" :default-open-keys="['2','3']"> <!-- 2、3导航菜单默认展开 -->
           <a-menu-item key="1">
@@ -15,10 +15,10 @@
           <a-sub-menu key="2">
               <span slot="title"><a-icon type="user" /><span>用户</span></span>
               <a-menu-item key="2-1">
-                 <router-link to="/userinfo/info">个人信息</router-link>
+                 <router-link to="/userinfo/info">公司信息</router-link>
               </a-menu-item>
               <a-menu-item key="2-2">
-                <router-link to="/userinfo/example">实例列表</router-link>
+                <router-link to="/userinfo/site">工地列表</router-link>
               </a-menu-item>
            </a-sub-menu>
           <a-sub-menu key="3">
@@ -67,8 +67,12 @@ export default {
   mounted() {
     document.cookies
     var token = this.$cookies.get("token")
+    if(token === null || token === undefined || token === ''){
+         this.$message.error('您尚未登录，请先登录');
+    	   this.$router.push({path:'/'})
+    }
     this.$ajax({
-      url:'/designer/infos', //设计师信息
+      url:'/sg/infos', //劳务信息
       method: 'post',
       params:{
         user_token:token
@@ -77,13 +81,6 @@ export default {
     .then((res)=>{
       this.userinfo = res.data.data
     });
-
-  	if(token == null){
-         this.$message.error('您尚未登录，请先登录');
-  		   this.$router.push({path:'/'})
-  	}
-
-
   },
   methods: {
     logout(){

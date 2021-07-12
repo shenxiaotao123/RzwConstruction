@@ -2,9 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import login from '@/login/login' //登录页
 import userinfo from '@/userinfo/info' //用户-个人信息
-import example from '@/userinfo/example' //用户-实例列表
-import addExample from '@/userinfo/addExample' //用户-新增实例
-import imgList from '@/userinfo/imgList' //用户-实例列表 - 图片列表
+import site from '@/userinfo/site' //用户-实例列表
+import addSite from '@/userinfo/addSite' //用户-新增工地
+import stageInfo from '@/userinfo/stageInfo' //用户-实例列表 - 图片列表
 import order from '@/order/list' //订单-订单列表
 import construction from '@/order/modules/construction' //订单-订单列表
 
@@ -36,23 +36,23 @@ export default new Router({
       name: 'Personal-info',
       component: () => import('@/userinfo/info')
     },
-    // 实例列表
+    // 工地列表
     {
-      path: '/userinfo/example',
-      name: 'example',
-      component: () => import('@/userinfo/example')
+      path: '/userinfo/site',
+      name: 'site',
+      component: () => import('@/userinfo/site')
     },
-    // 实例列表 - 新增
+    // 工地列表 - 新增
     {
-      path: '/userinfo/addExample',
-      name: 'addExample',
-      component: () => import('@/userinfo/addExample')
+      path: '/userinfo/addSite',
+      name: 'addSite',
+      component: () => import('@/userinfo/addSite')
     },
-    // 图片列表
+    // 工地阶段信息
     {
-      path: '/userinfo/imgList',
-      name: 'imgList',
-      component: () => import('@/userinfo/imgList')
+      path: '/userinfo/stageInfo',
+      name: 'stageInfo',
+      component: () => import('@/userinfo/stageInfo')
     },
     // 订单列表
     {
@@ -71,16 +71,7 @@ export default new Router({
       path: '/order/order_details',
       name: 'order_details',
       component: () => import('@/order/order_details'),
-      children: [
-        // 订单详情页
-        {
-          path: '/order/modules/designFee',
-          name: 'designFee',
-          component: () => import('@/order/modules/designFee')
-        }
-      ]
     }
-
 
   ]
 })

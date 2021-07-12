@@ -1,7 +1,7 @@
 <template>
           <a-form-item class="user-layout-login" id="formLogin" ref="formLogin" form="form" @submit="onSubmit">
               <div class="loginWrap">
-                <h2>荣装网设计师端</h2>
+                <h2>荣装网劳务公司端</h2>
                 <div class="loginWrapCon">
                   <h4>欢迎登录</h4>
 
@@ -73,7 +73,7 @@
                   'port': 'pc',
                 };
                 this.$ajax({
-                  url:'designer/login',
+                  url:'sg/login',
                   method: 'post',
                   params:formData
                 })
@@ -128,7 +128,7 @@
                     //const hide = this.$message.loading('验证码发送中..', 0)
                     console.log("接口前");
                     this.$ajax({  //获取短信验证码接口
-                      url:'designer/getTelCode',
+                      url:'sg/getTelCode',
                       method: 'post',
                       params:getTelCodeData
                     }).then((res)=>{

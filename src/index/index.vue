@@ -186,7 +186,7 @@ export default {
     console.log(token);
     this.NotLogin();
     this.$ajax({
-      url:'/designer/index', //首页
+      url:'/sg/index', //首页
       method: 'get',
       params:{
         user_token:token
@@ -196,7 +196,7 @@ export default {
       this.index = res.data.data
     });
     this.$ajax({
-      url:'/designer/infos', //设计师信息
+      url:'/sg/infos', //设计师信息
       method: 'post',
       params:{
         user_token:token
@@ -207,7 +207,7 @@ export default {
       this.userinfoinfos = res.data.data.infos
     });
     this.$ajax({
-      url:'/designer/index/message', //首页-动态
+      url:'/sg/index/message', //首页-动态
       method: 'post',
       params:{
         user_token:token

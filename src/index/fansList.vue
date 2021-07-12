@@ -66,7 +66,7 @@ export default {
       var token = this.$cookies.get("token")
       this.loading = true;
       this.$ajax({
-        url:'/designer/fans',
+        url:'/sg/fans',
         method: 'get',
         data: {
           results: 10,

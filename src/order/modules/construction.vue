@@ -1,9 +1,8 @@
 <template>
   <a-card :body-style="{padding: '24px 32px'}" :bordered="false" class="order_form">
-      <div class="text-r m-b-sm"> <router-link to="/order/list">返回订单列表</router-link></div>
         <div class="m-b-xxl">
-        <a-form-item label="上传施工图包" required>
-          <a-upload action="http://apitesttest.rongzw.com/api/upload/image" name="file" :multiple="true" @change="handleChangeZip" :remove="handleFileRemove" accept="rar, zip">
+        <a-form-item label="劳务合同包" required>
+          <a-upload action="http://apitesttest.rongzw.com/api/upload/image" name="file" :multiple="true" @change="handleChangeZip" :remove="handleFileRemove" accept=".rar, .zip">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
           </a-upload>
           <a-button class="m-t" type="primary" icon="cloud-upload" @click="upload()" v-show="uploadOriginFileObj">
@@ -11,53 +10,16 @@
           </a-button>
           <a-alert message="文件已上传成功!" type="success" show-icon v-show="uploadSuccess" />
 
-
-
         </a-form-item>
         </div>
 
-       <h3>根据施工图确定各个劳务公司的订单报价</h3>
-       <a-form v-bind="formLayout" >
-        <div class="construction-table">
-          <table width="100%">
-            <tr>
-              <th>ID-施工公司</th>
-              <th>报价单</th>
-              <th>订单报价</th>
-              <th>上传报价单PDF</th>
-              <th>操作</th>
-            </tr>
-            <tr v-for="gpc of getPushSgCompany">
-              <td width="300">{{gpc.company_id}}-{{gpc.company_name}}</td>
-              <td><a :href="gpc.quotation" target="_blank" title="点击查看"><img :src="gpc.quotation" width="60" height="60" alt=""></a></td>
-              <td>{{gpc.price}}元</td>
-              <td>{{gpc.quotation_pdf}}</td>
-              <td width="140">
-                <a @click="handleUpload(true,gpc)">报价-上传</a>
-              </td>
-            </tr>
-          </table>
-          <a-divider />
-          <div class="m-b-xxl m-t-xl text-c">
-            <a-button size="large" type="primary" @click="uploadSubmit" class="w">立即提交</a-button>
-          </div>
-        </div>
-      </a-form>
 
-      <!-- 报价-上传 -->
-      <a-modal title="订单报价-上传报价单PDF" :width="840" :visible="uploadVisible" @cancel="() => handleUploadCancel(false)" :confirm-loading="confirmLoading" :footer="null">
-        <uploadPDF v-if="uploadPDFshow" :companyInfo="companyInfo" @childClose="getChildClose(arguments)" />
-      </a-modal>
 
   </a-card>
 </template>
 
 <script>
-import uploadPDF from './uploadPDF' //报价-上传
 export default {
-  components: {
-    uploadPDF
-  },
   data () {
     this.formLayout = {
       labelCol: {
@@ -90,20 +52,6 @@ export default {
     }
   },
   mounted() {
-    document.cookies
-    var token = this.$cookies.get("token")
-    this.$ajax({
-      url:'/designer/order/getPushSgCompany', //获取推送的劳务公司列表
-      method: 'get',
-      params:{
-        user_token:token,
-        order_id: this.$route.query.id,
-      }
-    })
-    .then((res)=>{
-      this.getPushSgCompany = res.data.data
-      this.getPushSgCompanyList = res.data.data
-    });
     //[Web] 文件上传 前获取令牌
     this.$ajax({
       url:'/api/upload/getOssPolicy',
@@ -163,6 +111,7 @@ export default {
                     this.uploadOriginFileObj = undefined;
                     this.uploadSuccess = true;
                   }
+                  this.$emit('uploadImageUrl',this.archiveUrl); //向父组件发送文件地址
                   console.log(this.archiveUrl)
                 });
             },
@@ -183,91 +132,56 @@ export default {
     handleFileRemove (file) {
        this.uploadSuccess = false;
     },
-    //操作 报价-上传
-    handleUpload (uploadVisible,gpc) {
-       this.uploadVisible = uploadVisible;
-       this.companyInfo = gpc; //拿到施工公司信息
-    },
-    //操作 报价-上传  关闭
-    handleUploadCancel (uploadVisible) {
-       this.uploadVisible = uploadVisible;
-    },
-    getChildClose(params){ //操作 报价-上传 子组件向父组件传值
-       this.childClose = params[0];  //关闭信号
-       this.childQuotation = params[1]; //报价
-       this.childPdfUrl = params[2]; //PDF地址
-       this.childCompanyId = params[3]; //施工公司ID
-       console.log(params[1],"报价")
-       console.log(params[2],"PDF地址")
-       console.log(params[3],"施工公司ID")
-       for (var i = 0; i < this.getPushSgCompany.length; i++){
-           if(this.getPushSgCompany[i].company_id == this.childCompanyId){
-              this.getPushSgCompany[i].price = this.childQuotation
-              this.getPushSgCompany[i].quotation_pdf = this.childPdfUrl
-            }
-            console.log(this.getPushSgCompany[i])
-       }
 
-       if(this.childClose == 0){
-          this.handleUploadCancel(); //收到关闭信号,执行关闭
-          this.pricelist();
-          //this.getWorkImage(); //重新请求列表接口
-          //强制刷新新增图片子组件
-          this.uploadPDFshow= false;
-          this.$nextTick(() => {
-              this.uploadPDFshow= true;
-          });
-       }
-     },
-     pricelist(){ //新建一个提交接口的数组
-      this.priceList = [];
-      for (var i = 0; i < this.getPushSgCompany.length; i++){
-          var obj = {};
-          obj.id = this.getPushSgCompany[i].company_id;
-          obj.price = this.getPushSgCompany[i].price;
-          obj.quotation_pdf = this.getPushSgCompany[i].quotation_pdf;
-          this.priceList.push(obj);
-       }
-     },
+     // pricelist(){ //新建一个提交接口的数组
+     //  this.priceList = [];
+     //  for (var i = 0; i < this.getPushSgCompany.length; i++){
+     //      var obj = {};
+     //      obj.id = this.getPushSgCompany[i].company_id;
+     //      obj.price = this.getPushSgCompany[i].price;
+     //      obj.quotation_pdf = this.getPushSgCompany[i].quotation_pdf;
+     //      this.priceList.push(obj);
+     //   }
+     // },
      //立即提交
-     uploadSubmit(){
-       document.cookies
-       var token = this.$cookies.get("token")
+     // uploadSubmit(){
+     //   document.cookies
+     //   var token = this.$cookies.get("token")
 
-       if(this.archiveUrl == ""){
-         this.$message.error("上传施工图包不能为空");
-         return
-       }
-       if(this.priceList == ""){
-         this.$message.error("施工公司报价或报价单未填写完成");
-         console.log(this.priceList)
-         return
-       }
+     //   if(this.archiveUrl == ""){
+     //     this.$message.error("上传施工图包不能为空");
+     //     return
+     //   }
+     //   if(this.priceList == ""){
+     //     this.$message.error("施工公司报价或报价单未填写完成");
+     //     console.log(this.priceList)
+     //     return
+     //   }
 
-       this.$ajax({
-         url:'/designer/order/uploadSgPlan', //提交订单设计施工图
-         method: 'post',
-         params:{
-           user_token:token,
-         },
-         data:{
-           order_id: this.$route.query.id,
-           sg_zip:this.archiveUrl,//施工图URL
-           price: this.priceList,
-         }
-       })
-       .then((res)=>{
-         if(res.data.code == 1){
-           this.$message.error(res.data.msg);
-         }
-         if(res.data.code == 0){
-           this.$message.success(res.data.msg);
-           this.$router.push({
-              name: "orderList"
-           })
-         }
-       });
-     }
+     //   this.$ajax({
+     //     url:'/sg/order/uploadContract', //提交 上传劳务合同
+     //     method: 'post',
+     //     params:{
+     //       user_token:token,
+     //     },
+     //     data:{
+     //       order_id: this.$route.query.id,
+     //       sg_zip:this.archiveUrl,//劳务合同URL
+     //       price: this.priceList,
+     //     }
+     //   })
+     //   .then((res)=>{
+     //     if(res.data.code == 1){
+     //       this.$message.error(res.data.msg);
+     //     }
+     //     if(res.data.code == 0){
+     //       this.$message.success(res.data.msg);
+     //       this.$router.push({
+     //          name: "orderList"
+     //       })
+     //     }
+     //   });
+     // }
   },
 }
 </script>
