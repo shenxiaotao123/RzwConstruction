@@ -10,6 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@vue/cli": "^3.11.0",
     "ajv": "^8.5.0",
     "ant-design-vue": "^1.7.5",
     "autoprefixer": "^7.1.2",

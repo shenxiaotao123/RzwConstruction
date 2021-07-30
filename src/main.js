@@ -23,7 +23,7 @@ import qs from 'qs'
 
 Vue.prototype.$ajax = axios    //全局注册，使用方法为:this.$axios
 Vue.prototype.qs = qs           //全局注册，使用方法为:this.qs
-Vue.prototype.apiurl = 'http://apitesttest.rongzw.com '          //全局注册，使用方法为:this.qs
+Vue.prototype.apiurl = 'http://app.rongzw.com'          //全局注册，使用方法为:this.qs
 
 // import VueAxios from 'vue-axios'
 // Vue.use(VueAxios, axios)

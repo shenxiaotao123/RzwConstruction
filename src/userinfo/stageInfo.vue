@@ -54,8 +54,6 @@
 
       </div>
 
-
-
       <!-- 新增图片 -->
       <a-modal title="新增图片" :width="840" :visible="addImgVisible" @cancel="() => handleAdd(false)" :confirm-loading="confirmLoading" :footer="null">
         <addImg v-if="addImgshow" :siteId="site_id" :stageId="stageId" v-on:childClose="getChildClose" />

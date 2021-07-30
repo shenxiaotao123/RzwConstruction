@@ -204,7 +204,7 @@
       }
     }
   }
-.loginWrap { position: relative; margin: 150px auto 0 auto; padding-left: 345px; width: 800px; background:#FF6260 url(../assets/img/login/img.png) no-repeat left bottom; background-size: 345px ;
+.loginWrap { position: relative; margin: 150px auto 0 auto; padding-left: 345px; width: 800px; background:#ff7a60 url(../assets/img/login/img.png) no-repeat left bottom; background-size: 345px ;
   h2 { position: absolute; left: 0; top: 50px; width: 345px; text-align: center; color:#fff; font-size: 28px;}
   .loginWrapCon { padding: 80px 60px 100px 60px; background-color: #fff;}
    h4 { margin-bottom: 30px; font-size: 28px;}

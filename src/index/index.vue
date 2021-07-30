@@ -13,7 +13,7 @@
               <a-tag color="#87d068" v-if="userinfoinfos.is_allow_order == 10">接单中</a-tag>
             </span>
           </div>
-          <div> {{userinfoinfos.level_name}} | 我的设计费: {{userinfoinfos.money}}元/平方米</div>
+          <div>服务区域：{{userinfoinfos.allow_order_address}}</div>
         </div>
       </div>
       <div class="extra-content">
@@ -161,7 +161,7 @@
 </template>
 
 <script>
- import fansList from './fansList' //新增图片
+ import fansList from './fansList' //粉丝列表
 export default {
   name: 'index',
   components: {
@@ -196,7 +196,7 @@ export default {
       this.index = res.data.data
     });
     this.$ajax({
-      url:'/sg/infos', //设计师信息
+      url:'/sg/infos', //施工公司信息
       method: 'post',
       params:{
         user_token:token
