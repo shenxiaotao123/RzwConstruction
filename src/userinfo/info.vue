@@ -4,8 +4,8 @@
       <a-col :md="24" :lg="16">
        <a-form layout="vertical">
         <a-form-model layout="vertical" :model="userinfo" :rules="rules" ref="ruleForm">
-          <a-form-model-item label="用户名" required prop="nick_name">
-              <a-input placeholder="请输入用户名" v-model="userinfo.nick_name" />
+          <a-form-model-item label="公司名称" required prop="nick_name">
+              <a-input placeholder="请输入用户名" v-model="userInfoInfos.company_name" disabled="true" />
           </a-form-model-item>
           <a-form-model-item label="公司简介" required prop="brief">
             <a-textarea rows="4" placeholder="请输入公司简介" v-model="userinfo.brief" />
@@ -95,7 +95,7 @@
         loading: false,
         imageUrl: '',
         userinfo: {},
-        //userInfoInfos: [],
+        userInfoInfos: {},
         is_allow_order: '', //是否接单
         shapes: '', //户型
         stylesArrayData: '',
@@ -238,7 +238,7 @@
             this.areaArray = areaArray
             this.userinfo.areaArray = areaArray
             //头像 默认数据
-            this.uploadImage = res.data.data.user_image
+            this.uploadImage = res.data.data.infos.avatar
             this.imageUrl = this.uploadImage
           });
       },
@@ -262,7 +262,6 @@
             method: 'put',
             data: {
               user_token: token,
-              nick_name: this.userinfo.nick_name, //昵称
               brief: this.userinfo.brief, //简介
               province_id: this.provincial, //省ID
               city_id: this.city, //市ID

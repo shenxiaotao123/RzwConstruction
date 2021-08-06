@@ -3,11 +3,11 @@
     <div class="bg-ff m-b-md clear wrapper-lg">
       <div class="page-header-content fl">
         <div class="avatar">
-          <a-avatar size="large" :src="userinfo.user_image"/>
+          <a-avatar size="large" :src="userinfoinfos.avatar"/>
         </div>
         <div class="content">
           <div class="content-title">
-            {{userinfo.nick_name}}<span class="welcome-text">，你好！</span>
+            {{userinfoinfos.company_name}}<span class="welcome-text">，你好！</span>
             <span class="m-l">
               <a-tag color="#f50" v-if="userinfoinfos.is_allow_order == 20">休息中</a-tag>
               <a-tag color="#87d068" v-if="userinfoinfos.is_allow_order == 10">接单中</a-tag>

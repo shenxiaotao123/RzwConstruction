@@ -76,6 +76,7 @@ export default {
       uploadExampleImage:'', //图片地址
       uploading: false,
       imgArray:[],
+      addImgArray:[],
       SiteStageDetail:{},
     }
   },
@@ -103,6 +104,7 @@ export default {
               //console.log("我上传中");
               console.log(info.file.thumbUrl);
               var thumbUrl = info.file.thumbUrl
+
               this.$ajax({
                 url:'/api/upload/image', //图片上传接口
                 method: 'post',
@@ -112,9 +114,11 @@ export default {
               })
               .then((res)=>{
                 this.uploadExampleImage = res.data.data.url
-                this.imgArray.push(this.uploadExampleImage) //省市县ID添加到空数组里
-                console.log("数组",this.imgArray)
-                //this.$emit('uploadExampleImage',this.uploadExampleImage.url); //向父组件发送图片地址
+                //var imgArray = []
+                //console.log(imgArray,'3333333')
+                this.addImgArray.push(this.uploadExampleImage) //添加到数组里
+                console.log("数组",this.addImgArray)
+                //this.$emit('uploadExampeImage',this.uploadExampleImage.url); //向父组件发送图片地址
               });
       }
       if (info.file.status === 'done') {
@@ -132,7 +136,7 @@ export default {
         })
       .then(res=>{
         this.SiteStageDetail = res.data.data;
-        this.imgArray = res.data.data.pic_json
+        this.addImgArray = res.data.data.pic_json
       });
     },
     ImgSubmit(){ //提交
@@ -156,7 +160,7 @@ export default {
         },
         data:{
           site_id: this.siteId,//工地ID
-          pic_json: this.imgArray,//图片数组
+          pic_json: this.addImgArray,//图片数组
           stage_id:this.stageId,//工地阶段ID
           note:this.SiteStageDetail.note,//文字说明
         },
@@ -180,7 +184,7 @@ export default {
         },
         data:{
           site_id: this.siteId,//工地ID
-          pic_json: this.imgArray,//图片数组
+          pic_json: this.addImgArray,//图片数组
           stage_id:this.stageId,//工地阶段ID
           note:this.SiteStageDetail.note,//文字说明
         },

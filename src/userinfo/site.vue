@@ -133,7 +133,7 @@ const columns = [
   },
   {
     title: '用户',
-    dataIndex: 'video',
+    dataIndex: 'user.phone',
     ellipsis: true,
   },
   {

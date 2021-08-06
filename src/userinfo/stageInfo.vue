@@ -22,7 +22,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="用户" class="m-b-none" :labelCol="{lg: {span: 5}, sm: {span: 7}}" :wrapperCol="{lg: {span: 19}, sm: {span: 17} }">
-          {{siteDetailsUser.nick_name}}
+          {{siteDetailsUser.phone}}
           </a-form-item>
           <a-form-item label="所在城市" class="m-b-none" :labelCol="{lg: {span: 5}, sm: {span: 7}}" :wrapperCol="{lg: {span: 19}, sm: {span: 17} }">
           {{siteDetails.address}}

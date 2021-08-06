@@ -31,7 +31,7 @@
               {{orderDetailsHouse.detail_address}}
             </a-form-item>
             <a-form-item label="房屋户型" class="m-b-none" :labelCol="{lg: {span: 5}, sm: {span: 7}}" :wrapperCol="{lg: {span: 19}, sm: {span: 17} }">
-              {{orderDetailsHouse.house_type}}
+              {{orderDetailsHouse.shi}}室{{orderDetailsHouse.ting}}厅{{orderDetailsHouse.chu}}厨{{orderDetailsHouse.wei}}卫
             </a-form-item>
             <a-form-item label="房屋现状" class="m-b-none" :labelCol="{lg: {span: 5}, sm: {span: 7}}" :wrapperCol="{lg: {span: 19}, sm: {span: 17} }">
               {{orderDetailsHouse.house_status}}
@@ -211,7 +211,7 @@ export default {
         if(res.data.code == 0){
           this.$message.success(res.data.msg);
         }
-        this.getOrderList(); //订单列表请求接口部分
+        this.orderDetailsCancel(); //订单列表请求接口部分
       });
     },
     hydropower(record){ //确认水电施工

@@ -34,8 +34,8 @@
           <a-icon class="trigger" :type="collapsed ? 'menu-unfold' : 'menu-fold'" @click="() => (collapsed = !collapsed)"/>
           <span class="fr logoutwrap" @click="logout"><a-icon class="logout" type="logout" />退出</span>
           <div class="fr">
-            <a-avatar size="small" :src="userinfo.user_image"/>
-            {{userinfo.nick_name}}
+            <a-avatar size="small" :src="userInfoInfos.avatar"/>
+            {{userInfoInfos.company_name}}
           </div>
         </a-layout-header>
         <a-layout-content :style="{ margin: '24px 16px', minHeight: '280px' }">
@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       collapsed: false,
-      userinfo:[],
+      userInfoInfos:{},
       zh_CN,
     };
   },
@@ -79,7 +79,7 @@ export default {
       }
     })
     .then((res)=>{
-      this.userinfo = res.data.data
+      this.userInfoInfos = res.data.data.infos
     });
   },
   methods: {

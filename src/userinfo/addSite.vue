@@ -16,11 +16,11 @@
         <a-form-model-item label="标题" has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="title">
           <a-input v-model="addSite.title" placeholder="请输入标题" />
         </a-form-model-item>
-        <a-form-model-item label="负责人" has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
+        <a-form-model-item label="负责人" has-feedback required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="manager">
           <a-input v-model="addSite.manager" placeholder="请输入负责人" />
         </a-form-model-item>
         <a-form-model-item label="户型" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="shapesName">
-         <a-select :key="shapesName" :default-value="shapesName" v-model="addSite.shapesName" style="width: 120px" @change="shapes">
+         <a-select :key="shapesName" :default-value="shapesName" v-model="addSite.shapesName" style="width: 120px" @change="shapes" placeholder="请选择">
             <a-select-option :id="shapes.id" :value="key" :key="shapes.name" v-for="(shapes, key) of shapesData">
                {{shapes.name}}
             </a-select-option>
@@ -44,20 +44,20 @@
           <a-input v-model="addSite.area" placeholder="" suffix="㎡" />
         </a-form-model-item>
          <a-form-model-item label="造价" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="cost">
-          <a-input v-model="addSite.cost" placeholder="" suffix="元" />
+          <a-input v-model="addSite.cost" placeholder="" suffix="万元" />
         </a-form-model-item>
         <a-form-model-item label="所在地区" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="areaArray">
            <a-cascader :options="district" v-model="areaArray" placeholder="选择地区" @change="areaChange" :field-names="{ label: 'name', value: 'id', children: 'children'}" />
         </a-form-model-item>
-        <a-form-model-item label="当前施工阶段" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
-          <a-select :key="stageName" :default-value="stageName" v-model="addSite.stageName" style="width: 120px" @change="stage">
+        <a-form-model-item label="当前施工阶段" required :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }" prop="stageName">
+          <a-select :key="stageName" :default-value="stageName" v-model="addSite.stageName" style="width: 120px" @change="stage" placeholder="请选择">
              <a-select-option :id="ssl.id" :value="ssl.name" :key="ssl.name" v-for="(ssl, key) of SiteStageList">
                 {{ssl.name}}
              </a-select-option>
           </a-select>
         </a-form-model-item>
         <a-form-model-item label="排序" :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
-            <a-input-number id="Sort" :min="1" :max="999" @change="Sort" placeholder="输入数字" />
+            <a-input-number id="Sort" v-model="SortValue" :min="1" :max="999" @change="Sort" placeholder="输入数字" />
         </a-form-model-item>
         <a-form-item label="显示/隐藏" :labelCol="{lg: {span: 7}, sm: {span: 7}}" :wrapperCol="{lg: {span: 10}, sm: {span: 17} }">
           <a-switch checked-children="显示" un-checked-children="隐藏" :key="is_hide" :defaultChecked="is_hide" @change="ShowHideChange"/>
@@ -119,9 +119,9 @@ export default {
        // if (this.fileList.length === 0) {
        if (this.fileList.length === '0') {
           callback(new Error('封面图不能为空!'))
-          console.log("我是等于0")
+          //console.log("我是等于0")
        }else{
-         console.log("我是不等于0")
+         //console.log("我是不等于0")
          callback();
        }
       callback();
@@ -130,15 +130,12 @@ export default {
     return {
       // form: this.$form.createForm(this),
        exampleSubtitle:'', //自定义的面包屑标题
-       SortValue: 3, //排序
+       SortValue: '', //排序
        SiteStageList:[], //设计风格列表
        shapesData:[], //户型列表
        previewVisible: false, //上传封面图
        previewImage: '',
        fileList: [], //上传封面图列表
-       previewVrVisible: false, //上传VR封面图
-       previewVrImage: '',
-       fileListVr: [], //上传VR封面图列表
        areaArray: [], //省市县ID数组
 
        title:'', //标题
@@ -164,11 +161,13 @@ export default {
        addSite:{
          phone:'',//手机
          title:'', //标题
-         shapesName:'',
+         //shapesName:undefined,
+         manager:'',//负责人
          area:'',//面积
          cost:'',//花费
          areaArray: [], //省市县ID数组
          thumb_img:'',
+         stageName: undefined,//当前施工阶段
        },
        rulesExample: { //验证规则
            phone: [  //手机
@@ -179,8 +178,11 @@ export default {
              { required: true, message: '标题不能为空！', trigger: 'blur' },
              { min: 1, max: 200, message: '字数应该是 1 到 200个字之间', trigger: 'blur' },
            ],
+           manager: [  //负责人
+             { required: true, message: '负责人不能为空！', trigger: 'blur' },
+           ],
            shapesName: [ //户型
-             { required: true, message: '户型不能为空！', trigger: 'blur' },
+             { required: true, message: '户型不能为空！', trigger: 'change' },
            ],
            thumb_img: [  //封面图
              { required: true, message: '封面图不能为空', trigger: 'blur' },
@@ -195,7 +197,10 @@ export default {
              { validator: pureNumbers,trigger: 'blur'}
            ],
            areaArray: [  //所在地区
-             { required: true, message: '所在地区不能为空！', trigger: 'blur' }
+             { required: true, message: '所在地区不能为空！', trigger: 'change' }
+           ],
+           stageName: [  //当前施工阶段
+             { required: true, message: '当前施工阶段不能为空！', trigger: 'change' }
            ],
         },
     }
@@ -264,30 +269,15 @@ export default {
           console.log(this.addSite.areaArray)
           //显示隐藏.默认状态获取
           this.is_hide = res.data.data.is_hide
-          if (this.is_hide == 1) { //开启
+          if (this.is_hide === 0) { //开启
             this.is_hide = true;
           }
-          if (this.is_hide == 0) { //关闭
+          if (this.is_hide === 1) { //关闭
             this.is_hide = false;
           }
           this.is_hideID = res.data.data.is_hide //提交接口获取的默认数据格式0，1
-          //是否置顶.默认状态获取
-          // this.is_top = res.data.data.is_top
-          // if (this.is_top == 1) { //开启
-          //   this.is_top = true;
-          // }
-          // if (this.is_top == 0) { //关闭
-          //   this.is_top = false;
-          // }
-          // this.is_topID = res.data.data.is_top //提交接口获取的默认数据格式0，1
-          // //是否推荐.默认状态获取
-          // this.is_rec = res.data.data.is_rec
-          // if (this.is_rec == 1) { //开启
-          //   this.is_rec = true;
-          // }
-          // if (this.is_rec == 0) { //关闭
-          //   this.is_rec = false;
-          // }
+          //排序
+          this.SortValue = res.data.data.sort
           this.is_recommendID = res.data.data.is_rec //提交接口获取的默认数据格式0，1
           //封面图.默认状态获取
           this.thumb_img = res.data.data.thumb_img
@@ -306,8 +296,8 @@ export default {
         });
       } else {
         this.exampleSubtitle = "新增工地"
-        this.addSite.shapesName = "请选择";
-        this.addSite.stageName = "请选择";
+        //this.addSite.shapesName = "请选择";
+        //this.addSite.stageName = "请选择";
         this.is_hide = true; //显示隐藏
         this.is_hideID = 1; //默认-显示
         // this.is_top = false; //是否置顶
@@ -452,8 +442,7 @@ export default {
     handleChange({ fileList }) {
       // console.log("11111111111111111")
       this.fileList = fileList;
-      console.log(this.fileList.length)
-      this.addSite.thumb = this.fileList.length
+      this.addSite.thumb_img = this.fileList.length
       this.$ajax({
         url:'/api/upload/image', //图片上传接口
         method: 'post',
@@ -473,31 +462,13 @@ export default {
     },
     ShowHideChange(checked) {  //显示隐藏
        if(checked == true){
-         this.is_hideID = 1
+         this.is_hideID = 0
        }
        if(checked == false){
-         this.is_hideID = 0
+         this.is_hideID = 1
        }
        console.log('显示隐藏',checked);
     },
-    // topChange(checked) {  //置顶
-    //    if(checked == true){
-    //      this.is_topID = 1
-    //    }
-    //    if(checked == false){
-    //      this.is_topID = 0
-    //    }
-    //    console.log('置顶',checked);
-    // },
-    // recommendChange(checked) {  //设为推荐
-    //    if(checked == true){
-    //      this.is_recommendID = 1
-    //    }
-    //    if(checked == false){
-    //      this.is_recommendID = 0
-    //    }
-    //    console.log('设为推荐',checked);
-    // },
     areaChange(value) { //所在地区 省市县
       this.provincial = value[0]; //省
       this.city = value[1]; //市

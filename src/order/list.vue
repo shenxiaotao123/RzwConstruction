@@ -125,7 +125,7 @@ const columns = [
   },
   {
     title: '订单阶段',
-    dataIndex: 'designer_stage.name'
+    dataIndex: 'sg_stage.name'
   },
   {
     title: '用户名',

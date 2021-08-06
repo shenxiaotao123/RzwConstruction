@@ -2,7 +2,7 @@
   <a-card :body-style="{padding: '24px 32px'}" :bordered="false" class="order_form">
         <div class="m-b-xxl">
         <a-form-item label="劳务合同包" required>
-          <a-upload action="http://apitesttest.rongzw.com/api/upload/image" name="file" :multiple="true" @change="handleChangeZip" :remove="handleFileRemove" accept=".rar, .zip">
+          <a-upload action="http://apitesttest.rongzw.com/api/upload/image" name="file" :file-list="fileList" :multiple="false" @change="handleChangeZip" :remove="handleFileRemove" accept=".rar, .zip">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
           </a-upload>
           <a-button class="m-t" type="primary" icon="cloud-upload" @click="upload()" v-show="uploadOriginFileObj">
@@ -49,6 +49,7 @@ export default {
       childQuotation:'',//报价
       childPdfUrl:'',//PDF地址
       priceList:[],
+      fileList:[],
     }
   },
   mounted() {
@@ -117,6 +118,17 @@ export default {
             },
     //上传施工图包
     handleChangeZip(info) {
+      let fileList = [...info.fileList];
+      fileList = fileList.slice(-1); //限制上传个数1
+
+      fileList = fileList.map(file => {
+        if (file.response) {
+          file.url = file.response.url;
+        }
+        return file;
+      });
+      this.fileList = fileList;
+      
       if (info.file.status !== 'uploading') {
       }
       if (info.file.status === 'done') {
