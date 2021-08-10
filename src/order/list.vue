@@ -1,10 +1,13 @@
 <template>
   <div>
-    <div class="order_tabs">
-      <a @click="tabFilter(0)">全部</a>
-      <a @click="tabFilter(1)">进行中</a>
-      <a @click="tabFilter(2)">已完成</a>
-      <a @click="tabFilter(3)">已关闭</a>
+    <!-- <div class="order_tabs">
+        <a v-for="tba in tbas" @click="tabFilter(tba.index)" :key="tba.id" :class="{ active: tba.index === currentIndex }">{{tba.name}}</a>
+    </div> -->
+    <div class="order_tabs" id="tabs">
+      <a @click="tabFilter(0)" :class="{ active9: 0 === currentIndex }" :key="0">全部</a>
+      <a @click="tabFilter(1)" :class="{ active9: 1 === currentIndex }" :key="1">进行中</a>
+      <a @click="tabFilter(2)" :class="{ active9: 2 === currentIndex }" :key="2">已完成</a>
+      <a @click="tabFilter(3)" :class="{ active9: 3 === currentIndex }" :key="3">已关闭</a>
     </div>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper m-b">
@@ -169,6 +172,12 @@ export default {
   },
   data () {
     return {
+      tbas:[
+        { id: 0, name: '全部'},
+        { id: 1, name: '进行中'},
+        { id: 2, name: '已完成'},
+        { id: 3, name: '已关闭'},
+      ],
       orderNumber:'', //筛选项.订单编号
       phoneNumber:'', //筛选项.手机号码
       orderList:[],
@@ -198,7 +207,8 @@ export default {
       // 加载数据方法 必须为 Promise 对象
 
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+       currentIndex:0
     }
   },
   computed: {
@@ -256,9 +266,32 @@ export default {
      });
    },
    //顶部TAB类型大筛选
-   tabFilter(id){
-     this.orderStageType = id;
+   tabFilter(index){
+     this.orderStageType = index;
+     console.log(index)
      this.getOrderList(this.orderStageType);
+     this.currentIndex = index;
+     // var tabs = document.getElementById('tabs a');
+     // var tabs0 = document.getElementById('tabs-0');
+     // var tabs1 = document.getElementById('tabs-1');
+     // var tabs2 = document.getElementById('tabs-2');
+     // var tabs3 = document.getElementById('tabs-3');
+     // if(id === 0){
+     //   tabs.classList.remove("tabs-active");
+     //   tabs0.classList.add("tabs-active");
+     // }
+     // if(id === 1){
+     //   tabs0.classList.remove("tabs-active");
+     //   tabs1.classList.add("tabs-active");
+     // }
+     // if(id === 2){
+     //   document.getElementById('tabs a').classList.remove("tabs-active");
+     //   tabs2.classList.add("tabs-active");
+     // }
+     // if(id === 3){
+     //   document.getElementById('tabs a').classList.remove("tabs-active");
+     //   tabs3.classList.add("tabs-active");
+     // }
    },
    setModal2Visible(modal2Visible,record) { //上传劳务合同 - 弹出框
          this.modal2Visible = modal2Visible;
@@ -448,6 +481,7 @@ export default {
 </script>
 
 <style lang="less">
+  .active9 { color: #fff !important; background-color: #1890ff !important; border-color: #1890ff !important;}
   .order_tabs { margin-bottom: 5px;
     a { display: inline-block; padding: 10px 20px; border: 1px solid #eee; background-color: #fff; color:#999;
      &:hover { color:#1890ff;}

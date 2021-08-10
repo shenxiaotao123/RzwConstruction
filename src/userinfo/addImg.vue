@@ -15,8 +15,8 @@
            <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
              <img alt="example" style="width: 100%" :src="previewImage" />
            </a-modal>
-           <div class="picWrap m-r-sm" v-for="picjson in SiteStageDetail.pic_json" title="点击删除">
-             <img :src="picjson" width="50" height="50" class="picbr" alt="" @click="deletePic(pic)">
+           <div class="picWrap m-r-sm" v-for="(i,index) in SiteStageDetail.pic_json" title="点击删除" :key="i.id" @click="deletePic(index)">
+             <img :src="i.url" width="50" height="50" class="picbr" alt="">
              <a-icon type="delete" theme="filled" class="addImgIcon" />
            </div>
          </a-form-item>
@@ -95,10 +95,6 @@ export default {
       this.previewImage = file.url || file.preview;
       this.previewVisible = true;
     },
-    // beforeUpload(file) {
-    //     this.fileList = [...this.fileList, file];
-    //     return false;
-    // },
     imgHandleChange(info){
       if (info.file.status !== 'uploading') {
               //console.log("我上传中");
@@ -116,7 +112,8 @@ export default {
                 this.uploadExampleImage = res.data.data.url
                 //var imgArray = []
                 //console.log(imgArray,'3333333')
-                this.addImgArray.push(this.uploadExampleImage) //添加到数组里
+                ++this.tagNum;
+                this.addImgArray.push({"url":this.uploadExampleImage,"id":this.tagNum}) //添加到数组里
                 console.log("数组",this.addImgArray)
                 //this.$emit('uploadExampeImage',this.uploadExampleImage.url); //向父组件发送图片地址
               });
@@ -136,7 +133,12 @@ export default {
         })
       .then(res=>{
         this.SiteStageDetail = res.data.data;
-        this.addImgArray = res.data.data.pic_json
+        if(this.SiteStageDetail.note || this.SiteStageDetail.pic_json === 'undefined'){
+          console.log('我是修改')
+          this.addImgArray = res.data.data.pic_json
+        }
+        this.imgArray = res.data.data.pic_json
+        //this.fileList.url = res.data.data.pic_json
       });
     },
     ImgSubmit(){ //提交
@@ -198,8 +200,8 @@ export default {
         }
         });
     },
-    deletePic(pic){
-      this.SiteStageDetail.pic_json.splice(this.SiteStageDetail.pic_json.indexOf(pic),1);
+    deletePic(index){
+      this.SiteStageDetail.pic_json.splice(index,1);
     }
   },
 }

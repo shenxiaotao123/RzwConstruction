@@ -44,7 +44,7 @@
               <div class="padder-lg">
                 <a-row v-if="ssi.infos.pic_json">
                       <a-col :span="12">
-                        <img :src="ssipic" class="m-r-md radius-5" alt="" width="60" height="60" v-for="(ssipic,index) in ssi.infos.pic_json" :key="index">
+                        <img :src="ssipic.url" class="m-r-md radius-5" alt="" width="60" height="60" v-for="(ssipic,index) in ssi.infos.pic_json" :key="index">
                       </a-col>
                 </a-row>
                 <p class="m-t-sm">{{ssi.infos.note}}</p>

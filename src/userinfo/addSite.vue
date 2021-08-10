@@ -309,14 +309,33 @@ export default {
     //判断执行新增或修改
     handleSubmit (){
       var exampleId = this.$route.query.id //修改 - 实例ID
-      if (exampleId != undefined){
-        console.log("我是修改")
-        this.modifySubmit();
-      }
-      else{
-        console.log("我是新增")
-        this.addSubmit();
-      }
+      
+      var token = this.$cookies.get("token")
+      this.$ajax({
+        url: '/sg/site/checkUser',
+        method: 'post',
+        params:{
+           user_token:token,
+        },
+        data:{
+          phone:this.addSite.phone,//用户手机号
+        }
+      }).then(res => {
+        if(res.data.code == 1){
+          const error = this.$message.error(res.data.msg);
+        }
+        if(res.data.code == 0){
+          if (exampleId != undefined){
+            //我是修改
+            this.modifySubmit();
+          }
+          else{
+            //我是新增
+            this.addSubmit();
+          }
+        }
+      });
+      
     },
     //立即保存 - 提交动作
     onSubmit() {
@@ -363,7 +382,11 @@ export default {
       }).then(res => {
         this.addSite = res.data.data
         if(res.data.code == 1){
-          this.$message.error(res.data.msg);
+          const error = this.$message.error(res.data.msg);
+          setTimeout(error, 3000);
+          setTimeout(() => {
+            location.reload(); //刷新页面
+          }, 3000)
         }
         if(res.data.code == 0){
           this.$message.success(res.data.msg);
@@ -405,7 +428,11 @@ export default {
       }).then(res => {
         this.addSite = res.data.data
         if(res.data.code == 1){
-          this.$message.error(res.data.msg);
+          const error = this.$message.error(res.data.msg);
+          setTimeout(error, 3000);
+          setTimeout(() => {
+            location.reload(); //刷新页面
+          }, 3000)
         }
         if(res.data.code == 0){
           this.$message.success(res.data.msg);
